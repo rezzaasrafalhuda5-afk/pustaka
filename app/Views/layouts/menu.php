@@ -39,12 +39,6 @@
     </a>
 </li>
 
-<li class="nav-item mb-2">
-    <a class="nav-link d-flex align-items-center py-2 px-3 <?= (strpos(uri_string(), 'pengembalian') !== false) ? 'active shadow-sm text-white' : 'text-secondary' ?>" href="<?= base_url('/pengembalian') ?>">
-        <i class="bi bi-arrow-return-left me-3 fs-5"></i> <span class="fw-semibold">Pengembalian</span>
-    </a>
-</li>
-
         <li class="nav-item mb-2">
             <a class="nav-link d-flex align-items-center py-2 px-3 <?= (strpos(uri_string(), 'users') !== false && strpos(uri_string(), 'edit') === false) ? 'active shadow-sm text-white' : 'text-secondary' ?>" href="<?= base_url('/users') ?>">
                 <i class="bi bi-person-badge me-3 fs-5"></i> <span class="fw-semibold">Daftar Anggota</span>

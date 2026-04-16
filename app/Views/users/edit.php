@@ -9,7 +9,7 @@
 
         <div>
 
-            <form action="<?= base_url('users/update/' . $user['id']) ?>" method="post" enctype="multipart/form-data">
+            <form action="<?= base_url('users/update/' . $user['id_user']) ?>" method="post" enctype="multipart/form-data">
 
                 <div>
                     <label>Nama Lengkap</label><br>
@@ -54,8 +54,11 @@
 
                 <br>
                 <button type="submit">Update</button>
+                <?php if (session()->get('role') == 'admin') : ?>
                 <a href="<?= base_url('users') ?>">Kembali</a>
-
+                <?php else : ?>
+                <a href="<?= base_url('dashboard') ?>">Kembali</a>
+                <?php endif; ?>
             </form>
         </div>
     </div>

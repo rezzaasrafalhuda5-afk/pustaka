@@ -13,25 +13,23 @@ class Pengembalian extends BaseController
         $this->peminjamanModel = new PeminjamanModel();
     }
 
-  public function index()
+ public function index()
 {
     $db      = \Config\Database::connect();
     $builder = $db->table('peminjaman');
-    
-    // Melakukan Join tabel
     $builder->select('peminjaman.*, buku.judul, users.nama');
-    $builder->join('buku', 'buku.id_buku = peminjaman.id_buku');
-    $builder->join('users', 'users.id_user = peminjaman.id_user');
-
-    // MENGATASI AMBIGU: Sebutkan 'peminjaman.status'
-    $builder->where('peminjaman.status', 'dikembalikan'); 
+    
+    // Gunakan 'left' agar data peminjaman tidak hilang jika relasi error
+    $builder->join('buku', 'buku.id_buku = peminjaman.id_buku', 'left');
+    $builder->join('users', 'users.id_user = peminjaman.id_user', 'left');
 
     $data = [
         'title'      => 'Data Pengembalian',
-        'pengembalian' => $builder->get()->getResultArray(),
-        'intRole'    => session()->get('role') // Mengambil role untuk hak akses
+        'peminjaman' => $builder->get()->getResultArray(),
+        'intRole'    => session()->get('role')
     ];
 
     return view('pengembalian/index', $data);
 }
+
 }

@@ -2,17 +2,7 @@
 
 <?= $this->section('content') ?>
 <div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-dark mb-0">Daftar Peminjaman</h4>
-        <a href="<?= base_url('peminjaman/tambah') ?>" class="btn btn-primary shadow-sm">
-            <i class="bi bi-plus-lg me-1"></i> Tambah Peminjaman
-        </a>
-        
-    </div>
-
-    <?php if (session()->getFlashdata('success')) : ?>
-        <div class="alert alert-success border-0 shadow-sm"><?= session()->getFlashdata('success') ?></div>
-    <?php endif; ?>
+    <h4 class="fw-bold mb-4">Daftar Transaksi Peminjaman</h4>
 
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
@@ -23,38 +13,39 @@
                             <th class="ps-4">No</th>
                             <th>Nama Siswa</th>
                             <th>Judul Buku</th>
-                            <th>Tanggal Pinjam</th>
                             <th>Status</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (empty($peminjaman)) : ?>
+                        <?php $no = 1; foreach ($peminjaman as $p) : ?>
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">Belum ada data transaksi.</td>
+                                <td class="ps-4"><?= $no++; ?></td>
+                                <td><?= $p['nama']; ?></td>
+                                <td><?= $p['judul']; ?></td>
+                                <td>
+                                    <?php 
+                                        $st = strtolower($p['status'] ?? ''); 
+                                        $badge = ($st == 'dipinjam') ? 'bg-primary' : (($st == 'pending' || $st == '') ? 'bg-warning text-dark' : 'bg-success');
+                                    ?>
+                                    <span class="badge <?= $badge ?>"><?= ucfirst($st ?: 'Pending'); ?></span>
+                                </td>
+                                <td class="text-center">
+                                    <?php if (session()->get('role') == 'admin') : ?>
+                                        <?php if ($st == 'pending' || $st == '') : ?>
+                                            <a href="<?= base_url('peminjaman/konfirmasi/'.$p['id_pinjam'].'/setuju') ?>" class="btn btn-sm btn-success">Setuju</a>
+                                            <a href="<?= base_url('peminjaman/konfirmasi/'.$p['id_pinjam'].'/tolak') ?>" class="btn btn-sm btn-danger">Tolak</a>
+                                        <?php elseif ($st == 'dipinjam') : ?>
+                                            <a href="<?= base_url('peminjaman/proses_kembali/'.$p['id_pinjam']) ?>" class="btn btn-sm btn-outline-primary">Proses Kembali</a>
+                                        <?php else : ?>
+                                            <span class="text-muted small">Selesai</span>
+                                        <?php endif; ?>
+                                    <?php else : ?>
+                                        <small class="text-muted">No Action</small>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
-                        <?php else : ?>
-                            <?php $no = 1; foreach ($peminjaman as $p) : ?>
-                                <tr>
-                                    <td class="ps-4"><?= $no++; ?></td>
-                                    <td class="fw-bold"><?= $p['nama']; ?></td>
-                                    <td><?= $p['judul']; ?></td>
-                                    <td><?= date('d/m/Y H:i', strtotime($p['tanggal_pinjam'])); ?></td>
-                                    <td>
-                                        <span class="badge <?= $p['status'] == 'dipinjam' ? 'bg-warning text-dark' : 'bg-success' ?>">
-                                            <?= ucfirst($p['status']); ?>
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="<?= base_url('peminjaman/proses_kembali/'.$p['id_pinjam']) ?>" 
-   class="btn btn-sm btn-outline-success" 
-   onclick="return confirm('Yakin buku ini sudah dikembalikan?')">
-   Kembalikan
-</a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>

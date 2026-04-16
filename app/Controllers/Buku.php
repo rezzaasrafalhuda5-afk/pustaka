@@ -1,43 +1,48 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Models\BukuModel;
+use App\Models\PeminjamanModel;
 
 class Buku extends BaseController
 {
     protected $bukuModel;
+    protected $peminjamanModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->bukuModel = new BukuModel();
+        $this->peminjamanModel = new PeminjamanModel();
     }
 
- public function index()
+    public function index()
+    {
+        $data = [
+            'title' => 'Katalog Buku',
+            'buku'  => $this->bukuModel->findAll(),
+        ];
+        return view('buku/index', $data);
+    }
+
+   public function ajukan($id_buku)
 {
-    // 1. Ambil input keyword dan kategori dari URL
-    $keyword = $this->request->getGet('keyword');
-    $kategori = $this->request->getGet('kategori');
-
-    $builder = $this->bukuModel;
-
-    // 2. Logika Pencarian: jika ada keyword, cari di kolom judul atau penulis
-    if ($keyword) {
-        $builder->like('judul', $keyword)->orLike('penulis', $keyword);
+    if (session()->get('role') == 'admin') {
+        return redirect()->back()->with('error', 'Admin tidak boleh meminjam.');
     }
 
-    // 3. Logika Filter: jika ada kategori, saring berdasarkan kolom kategori
-    if ($kategori) {
-        $builder->where('kategori', $kategori);
-    }
-
+    // Pastikan menggunakan nama kolom yang tepat sesuai database Anda
     $data = [
-        'title'          => 'Katalog Buku',
-        'buku'           => $builder->findAll(), // Ambil data yang sudah difilter
-        'kategori_aktif' => $kategori // Digunakan untuk menandai tombol mana yang sedang diklik
+        'id_user'           => session()->get('id_user'),
+        'id_buku'           => $id_buku,
+        'tanggal_pengajuan' => date('Y-m-d H:i:s'), // Ini supaya waktu transaksi tidak -0001
+        'status'            => 'pending'             // Ini kunci supaya tombol muncul
     ];
 
-    return view('buku/index', $data);
+    $this->peminjamanModel->insert($data);
+
+    return redirect()->to('/buku')->with('success', 'Berhasil mengajukan pinjaman.');
 }
-    // Fungsi tambah, simpan, dan hapus tetap sama seperti sebelumnya
     public function tambah()
 {
     $data = [

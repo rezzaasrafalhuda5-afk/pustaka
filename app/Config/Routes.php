@@ -60,3 +60,5 @@ $routes->get('/users/delete/(:num)', 'Users::delete/$1', $allRole); // aksi hapu
 $routes->get('users/detail/(:num)', 'Users::detail/$1', $allRole); // aksi detail user
 $routes->get('users/print', 'Users::print', $allRole); // aksi print data user
 $routes->get('users/wa/(:num)', 'Users::wa/$1', $allRole); // aksi kirim ke whatsapp
+$routes->get('buku/ajukan/(:num)', 'Buku::ajukan/$1');
+$routes->get('peminjaman/konfirmasi/(:num)/(:any)', 'Peminjaman::konfirmasi/$1/$2');
